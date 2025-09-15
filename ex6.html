@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Currency Converter</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; max-width: 500px; }
+    h1 { color: #2c3e50; }
+    input, select, button { padding: 6px; margin-top: 6px; width: 100%; }
+    #result { margin-top: 12px; padding: 10px; border-radius: 6px; background: #eef9ef; }
+  </style>
+</head>
+<body>
+  <h1>Currency Converter</h1>
+
+  <label>Amount:
+    <input type="number" id="amount" placeholder="Enter amount">
+  </label>
+  <label>From:
+    <select id="from">
+      {% for c in currencies %}
+      <option value="{{c}}">{{c}}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>To:
+    <select id="to">
+      {% for c in currencies %}
+      <option value="{{c}}">{{c}}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button onclick="convert()">Convert</button>
+  <div id="result"></div>
+
+<script>
+async function convert() {
+  const amount = document.getElementById("amount").value;
+  const from = document.getElementById("from").value;
+  const to = document.getElementById("to").value;
+  const resDiv = document.getElementById("result");
+
+  const res = await fetch("/api/convert", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({amount, from, to})
+  });
+  const data = await res.json();
+  if(data.error){
+    resDiv.innerText = "Error: " + data.error;
+  } else {
+    resDiv.innerText = `${amount} ${from} = ${data.result} ${to}`;
+  }
+}
+</script>
+</body>
+</html>
